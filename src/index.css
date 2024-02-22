@@ -1,13 +1,96 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+html {
+	font-size: 62.5%;
+	font-family: "Montserrat", sans-serif;
+	font-weight: 400;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+:root {
+	--btn-fail: red;
+	--btn-average: yellow;
+	--btn-pass: green;
+	--btn-pass-text: #fff;
+}
+
+/* quiz */
+.app {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
+.quiz {
+	width: 80%;
+	height: 50rem;
+	background-color: #d9ecc5;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.form-name {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+.form-name #user-name {
+	height: 5.4rem;
+	width: 300px;
+	text-align: center;
+	border: none;
+	font-size: 2.4rem;
+}
+.form-name button {
+	width: 15rem;
+	height: 4.4rem;
+	font-size: 2.4rem;
+	font-weight: 700;
+	border: none;
+	border-radius: 0.7rem;
+	background-color: var(--btn-pass);
+	color: var(--btn-pass-text);
+	cursor: pointer;
+}
+.form-name #user-name:focus,
+.form-name button:focus {
+	outline: none;
+}
+
+/* quiz main */
+.quiz-main {
+}
+.quizes #question {
+	font-size: 2.4rem;
+	font-weight: 600;
+	margin-bottom: 1rem;
+}
+.quizes ul {
+	list-style: none;
+	padding-left: 1.2rem;
+}
+.quizes ul li {
+	font-size: 1.6rem;
+	font-weight: 500;
+	margin-bottom: 0.6rem;
+}
+.btns {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 1.4rem;
+}
+.btn {
+	padding: 1.4rem;
+	border: none;
+	font-size: 1.8rem;
+	font-weight: 700;
+	background-color: #6d7663;
+	color: #f3f3f3;
+	cursor: pointer;
 }

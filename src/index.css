@@ -94,3 +94,19 @@ html {
 	color: #f3f3f3;
 	cursor: pointer;
 }
+
+/* Results */
+.results {
+	width: 80%;
+	text-align: center;
+}
+.results .reviews {
+	font-size: 2rem;
+	font-weight: 500;
+	margin-bottom: 1rem;
+}
+.results .score {
+	font-size: 2.4rem;
+	font-weight: 700;
+	margin-bottom: 1.4rem;
+}

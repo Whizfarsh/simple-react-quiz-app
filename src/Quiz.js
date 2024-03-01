@@ -1,3 +1,4 @@
+import { object } from "prop-types";
 import { useState } from "react";
 
 const initialQuiz = [
@@ -235,11 +236,14 @@ const initialQuiz = [
 		answer: "The smoothness of animations",
 	},
 ];
+const totalShownQuiz = 20;
 
 export function Quiz() {
 	// let username;
 	const [userName, setUserName] = useState("");
 	const [isQuizStarted, setIsQuizStarted] = useState(false);
+	const [quizEnd, setQuizEnd] = useState(false);
+	const [answeredQuiz, setAnsweredQuiz] = useState({});
 	// const [showQuiz, setSHowQuiz] = useState(true);
 
 	function handleStart(e) {
@@ -260,7 +264,23 @@ export function Quiz() {
 					handleStart={handleStart}
 				/>
 			)}
-			{isQuizStarted && <Startquiz userValue={userName} />}
+			{isQuizStarted && !quizEnd && (
+				<Startquiz
+					userValue={userName}
+					setIsQuizStarted={setIsQuizStarted}
+					setQuizEnd={setQuizEnd}
+					answeredQuiz={answeredQuiz}
+					setAnsweredQuiz={setAnsweredQuiz}
+				/>
+			)}
+			{quizEnd && (
+				<ResultUpdate
+					answeredQuiz={answeredQuiz}
+					setAnsweredQuiz={setAnsweredQuiz}
+					setIsQuizStarted={setIsQuizStarted}
+					setQuizEnd={setQuizEnd}
+				/>
+			)}
 		</div>
 	);
 }
@@ -282,15 +302,23 @@ function User({ userName, setUserName, handleStart }) {
 	);
 }
 
-function Startquiz({ userValue }) {
+function Startquiz({
+	userValue,
+	setIsQuizStarted,
+	answeredQuiz,
+	setAnsweredQuiz,
+	setQuizEnd,
+}) {
 	const quizLength = initialQuiz.length;
 	let randNums = Math.floor(Math.random() * quizLength);
-	const totalAnswered = 5;
 
 	const [curQuiz, setCurQuiz] = useState(1);
 	const [showedQuiz, setShowedQuiz] = useState([randNums]);
 	const totalQuized = showedQuiz.length;
 
+	const [optionSelected, setOptionSelected] = useState("");
+
+	// console.log(randNums);
 	function handleNext() {
 		do {
 			randNums = Math.floor(Math.random() * quizLength);
@@ -299,12 +327,35 @@ function Startquiz({ userValue }) {
 		if (curQuiz === totalQuized) {
 			setShowedQuiz((showed) => [...showed, randNums]);
 		}
+
+		setAnsweredQuiz((previousAnswer) => ({
+			...previousAnswer,
+			[initialQuiz[showedQuiz[curQuiz - 1]].question]: !optionSelected
+				? setOptionSelected("")
+				: optionSelected,
+		}));
+		// console.log(answeredQuiz);
 	}
 	function handlePrevious() {
 		setCurQuiz((cur) => cur - 1);
 	}
 	const previousDisable = curQuiz === 1;
-	const nextDisable = curQuiz === totalAnswered;
+	const nextDisable = curQuiz === totalShownQuiz;
+
+	function handleSelectedOption(e) {
+		setOptionSelected(e.target.value);
+	}
+
+	function handleSubmit() {
+		// setIsQuizStarted(false);
+		setAnsweredQuiz((previousAnswer) => ({
+			...previousAnswer,
+			[initialQuiz[showedQuiz[curQuiz - 1]].question]: !optionSelected
+				? setOptionSelected("")
+				: optionSelected,
+		}));
+		setQuizEnd(true);
+	}
 	return (
 		<div className="quiz-main">
 			<h2>Hello {userValue}</h2>
@@ -314,26 +365,57 @@ function Startquiz({ userValue }) {
 						{curQuiz}. {initialQuiz[showedQuiz[curQuiz - 1]].question}
 					</p>
 					{initialQuiz[showedQuiz[curQuiz - 1]].options.map((option) => (
-						<Options option={option} />
+						<Options
+							option={option}
+							key={option}
+							handleSelectedOption={handleSelectedOption}
+							optionSelected={optionSelected}
+							answeredQuiz={answeredQuiz}
+							question={initialQuiz[showedQuiz[curQuiz - 1]].question}
+						/>
 					))}
+					<span>{initialQuiz[showedQuiz[curQuiz - 1]].answer}</span>
 				</ul>
 			</div>
 			<div className="btns">
 				<Button handleClick={handlePrevious} disabledStatus={previousDisable}>
 					Previous
 				</Button>
-				<Button handleClick={handleNext} disabledStatus={nextDisable}>
-					Next
-				</Button>
+				{curQuiz === totalShownQuiz ? (
+					<Button handleClick={handleSubmit}>Submit</Button>
+				) : (
+					<Button handleClick={handleNext} disabledStatus={nextDisable}>
+						Next
+					</Button>
+				)}
 			</div>
 		</div>
 	);
 }
 
-function Options({ option }) {
+function Options({
+	option,
+	handleSelectedOption,
+	optionSelected,
+	answeredQuiz,
+	question,
+}) {
+	const selectedAnswer = answeredQuiz[question];
 	return (
 		<li>
-			<input type="radio" />
+			<input
+				type="radio"
+				value={option}
+				onChange={handleSelectedOption}
+				checked={
+					option === selectedAnswer
+						? true
+						: optionSelected === option
+						? true
+						: false
+				}
+				// optionSelected === option ? true : false
+			/>
 			{option}
 		</li>
 	);
@@ -348,5 +430,59 @@ function Button({ handleClick, children, disabledStatus }) {
 		>
 			{children}
 		</button>
+	);
+}
+
+function ResultUpdate({
+	answeredQuiz,
+	setAnsweredQuiz,
+	setIsQuizStarted,
+	setQuizEnd,
+}) {
+	const submittedQuestions = Object.keys(answeredQuiz);
+	console.log(submittedQuestions);
+	let corrected = 0;
+
+	initialQuiz.forEach((quiz) => {
+		if (answeredQuiz.hasOwnProperty(quiz.question)) {
+			if (answeredQuiz[quiz.question] === quiz.answer) {
+				corrected++;
+			}
+		}
+	});
+	const percentage = (corrected / totalShownQuiz) * 100;
+
+	function handleResetBtn() {
+		corrected = 0;
+		setAnsweredQuiz({});
+		setQuizEnd(false);
+	}
+	return (
+		<>
+			<div className="results">
+				<p className="reviews">
+					You have submitted {submittedQuestions.length} quiz. With {corrected}{" "}
+					correct answers.
+				</p>
+				<p className="score">
+					You Scored
+					<span
+						style={{
+							color:
+								percentage >= 60
+									? "#2E8B57"
+									: percentage < 50
+									? "#ff0000"
+									: "#ADFF2F",
+							margin: "0 0.5rem",
+						}}
+					>
+						{Math.floor(percentage)}%
+					</span>
+					in total
+				</p>
+				<Button handleClick={handleResetBtn}>Reset</Button>
+			</div>
+		</>
 	);
 }

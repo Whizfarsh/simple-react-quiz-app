@@ -302,13 +302,7 @@ function User({ userName, setUserName, handleStart }) {
 	);
 }
 
-function Startquiz({
-	userValue,
-	setIsQuizStarted,
-	answeredQuiz,
-	setAnsweredQuiz,
-	setQuizEnd,
-}) {
+function Startquiz({ userValue, answeredQuiz, setAnsweredQuiz, setQuizEnd }) {
 	const quizLength = initialQuiz.length;
 	let randNums = Math.floor(Math.random() * quizLength);
 
@@ -357,39 +351,43 @@ function Startquiz({
 		setQuizEnd(true);
 	}
 	return (
-		<div className="quiz-main">
-			<h2>Hello {userValue}</h2>
-			<div className="quizes">
-				<ul>
-					<p id="question">
-						{curQuiz}. {initialQuiz[showedQuiz[curQuiz - 1]].question}
-					</p>
-					{initialQuiz[showedQuiz[curQuiz - 1]].options.map((option) => (
-						<Options
-							option={option}
-							key={option}
-							handleSelectedOption={handleSelectedOption}
-							optionSelected={optionSelected}
-							answeredQuiz={answeredQuiz}
-							question={initialQuiz[showedQuiz[curQuiz - 1]].question}
-						/>
-					))}
-					<span>{initialQuiz[showedQuiz[curQuiz - 1]].answer}</span>
-				</ul>
+		<>
+			<div className="quiz-main">
+				<h2>Hello {userValue}</h2>
+				<div className="quizes">
+					<ul>
+						<p id="question">
+							{curQuiz}. {initialQuiz[showedQuiz[curQuiz - 1]].question}
+						</p>
+						{initialQuiz[showedQuiz[curQuiz - 1]].options.map((option) => (
+							<Options
+								option={option}
+								key={option}
+								handleSelectedOption={handleSelectedOption}
+								optionSelected={optionSelected}
+								answeredQuiz={answeredQuiz}
+								question={initialQuiz[showedQuiz[curQuiz - 1]].question}
+							/>
+						))}
+					</ul>
+					<div className="btns">
+						<Button
+							handleClick={handlePrevious}
+							disabledStatus={previousDisable}
+						>
+							Previous
+						</Button>
+						{curQuiz === totalShownQuiz ? (
+							<Button handleClick={handleSubmit}>Submit</Button>
+						) : (
+							<Button handleClick={handleNext} disabledStatus={nextDisable}>
+								Next
+							</Button>
+						)}
+					</div>
+				</div>
 			</div>
-			<div className="btns">
-				<Button handleClick={handlePrevious} disabledStatus={previousDisable}>
-					Previous
-				</Button>
-				{curQuiz === totalShownQuiz ? (
-					<Button handleClick={handleSubmit}>Submit</Button>
-				) : (
-					<Button handleClick={handleNext} disabledStatus={nextDisable}>
-						Next
-					</Button>
-				)}
-			</div>
-		</div>
+		</>
 	);
 }
 
